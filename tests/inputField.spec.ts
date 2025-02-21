@@ -48,11 +48,11 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
   await expect(page.getByRole('heading')).toHaveText('Edit Pet Type')
 
   //enter moose but cancel cange
-  const edittextField = page.locator('#name')
-  await edittextField.click()
-  await edittextField.clear()
-  await edittextField.fill('moose')
-  expect(edittextField).toHaveValue('moose')
+  const petTypeNameInputField = page.locator('#name')
+  await petTypeNameInputField.click()
+  await petTypeNameInputField.clear()
+  await petTypeNameInputField.fill('moose')
+  expect(petTypeNameInputField).toHaveValue('moose')
   await page.getByRole('button', {name: "cancel"}).click()
  
   //ensure dog is still dog
@@ -72,9 +72,9 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
     expect(page.getByRole('heading')).toHaveText('Edit Pet Type')
 
     //check to see validation occurs
-    const edittextField = page.locator('#name')
-    await edittextField.click()
-    await edittextField.clear()
+    const petTypeNameInputField = page.locator('#name')
+    await petTypeNameInputField.click()
+    await petTypeNameInputField.clear()
 
     await expect(page.locator('.help-block')).toHaveText('Name is required')
 
