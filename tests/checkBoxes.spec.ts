@@ -34,7 +34,7 @@ test('Test Case 2: Select all specialties', async ({page}) => {
   await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
   await page.getByText('Veterinarians').click()
   await page.getByText('all').click()
-  expect(page.getByRole('heading', {name: 'Veterinarians'}))
+  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
 
   await page.getByRole('button', {name: "Edit Vet"}).nth(3).click()
   await expect(page.locator('.selected-specialties')).toHaveText('surgery')
@@ -55,7 +55,7 @@ test('Test Case 3: Unselect all specialties', async ({page}) => {
   await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
   await page.getByText('Veterinarians').click()
   await page.getByText('all').click()
-  expect(page.getByRole('heading', {name: 'Veterinarians'}))
+  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
 
   await page.getByRole('button', {name: "Edit Vet"}).nth(2).click()
   await expect(page.locator('.selected-specialties')).toHaveText('dentistry, surgery')
