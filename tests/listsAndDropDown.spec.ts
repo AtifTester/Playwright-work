@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test.only("Test Case 1: Validate selected pet types from the list", async ({
+test("Test Case 1: Validate selected pet types from the list", async ({
   page,
 }) => {
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
@@ -47,6 +47,37 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
   await page.getByText("Search").click();
   await expect(page.getByRole("heading")).toHaveText("Owners");
 
-  await page.getByText("George Franklin").click();
-  await expect(page.locator(".ownerFullName")).toHaveText("George Franklin");
+  await page.getByText("Eduardo Rodriquez").click();
+
+  await page
+    .locator("app-pet-list")
+    .filter({ hasText: "Rosy" })
+    .getByRole("button", { name: "Edit Pet" })
+    .click();
+
+  await expect(page.locator("#name")).toHaveValue("Rosy");
+  await expect(page.locator("#type1")).toHaveValue("dog");
+
+  await page.locator("#type").selectOption("bird");
+  await expect(page.locator("#type1")).toHaveValue("bird");
+  await expect(page.locator("#type")).toHaveValue("bird");
+  await page.getByRole("button", { name: "Update Pet" }).click();
+
+  await expect(
+    page.locator("app-pet-list").filter({ hasText: "Rosy" })
+  ).toContainText("bird");
+
+  await page
+    .locator("app-pet-list")
+    .filter({ hasText: "Rosy" })
+    .getByRole("button", { name: "Edit Pet" })
+    .click();
+
+  await expect(page.locator("#name")).toHaveValue("Rosy");
+  await expect(page.locator("#type1")).toHaveValue("bird");
+
+  await page.locator("#type").selectOption("dog");
+  await expect(page.locator("#type1")).toHaveValue("dog");
+  await expect(page.locator("#type")).toHaveValue("dog");
+  await page.getByRole("button", { name: "Update Pet" }).click();
 });
