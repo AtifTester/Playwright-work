@@ -62,8 +62,7 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
   ).toHaveText("bird");
 
   await page
-    .locator("app-pet-list")
-    .filter({ hasText: "Rosy" })
+    .locator("app-pet-list", { hasText: "Rosy" })
     .getByRole("button", { name: "Edit Pet" })
     .click();
 
