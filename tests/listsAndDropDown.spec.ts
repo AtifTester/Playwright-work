@@ -17,7 +17,7 @@ test("Test Case 1: Validate selected pet types from the list", async ({
   //store variable of type field
   const typeField = page.locator("#type1");
   //store variable of dropdown
-  const dropDownSelectedField = page.locator("#type");
+  const dropDownField = page.locator("#type");
 
   await page
     .locator("app-pet-list", { hasText: "Leo" })
@@ -33,7 +33,7 @@ test("Test Case 1: Validate selected pet types from the list", async ({
   const listOfOptions = ["cat", "dog", "lizard", "snake", "bird", "hamster"];
 
   for (const currentOption of listOfOptions) {
-    dropDownSelectedField.selectOption(currentOption);
+    dropDownField.selectOption(currentOption);
     await expect(typeField).toHaveValue(currentOption);
   }
 });
@@ -47,14 +47,14 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
     .click();
 
   const typeField = page.locator("#type1");
-  const dropDownSelectedField = page.locator("#type");
+  const dropDownField = page.locator("#type");
 
   await expect(page.locator("#name")).toHaveValue("Rosy");
   await expect(typeField).toHaveValue("dog");
 
-  await dropDownSelectedField.selectOption("bird");
+  await dropDownField.selectOption("bird");
   await expect(typeField).toHaveValue("bird");
-  await expect(dropDownSelectedField).toHaveValue("bird");
+  await expect(dropDownField).toHaveValue("bird");
   await page.getByRole("button", { name: "Update Pet" }).click();
 
   await expect(
@@ -69,8 +69,8 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
   await expect(page.locator("#name")).toHaveValue("Rosy");
   await expect(typeField).toHaveValue("bird");
 
-  await dropDownSelectedField.selectOption("dog");
+  await dropDownField.selectOption("dog");
   await expect(typeField).toHaveValue("dog");
-  await expect(dropDownSelectedField).toHaveValue("dog");
+  await expect(dropDownField).toHaveValue("dog");
   await page.getByRole("button", { name: "Update Pet" }).click();
 });
