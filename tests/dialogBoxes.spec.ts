@@ -7,13 +7,15 @@ test.beforeEach(async ({ page }) => {
 test("Test Case: Add and delete pet type", async ({ page }) => {
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
   await page.getByText("Pet Types").click();
-  expect(page.getByRole("heading", { name: "Pet Types" }));
+  await expect(page.getByRole("heading")).toHaveText("Pet Types");
 
   await page.getByRole("button", { name: "Add" }).click();
 
-  const inputNameField = page.locator("input#name");
+  const inputNameField = page.locator("#name");
 
-  expect(page.getByRole("heading", { name: "New Pet Type" }));
+  await expect(page.locator("app-pettype-add").getByRole("heading")).toHaveText(
+    "New Pet Type"
+  );
   await expect(page.locator("app-pettype-add label")).toHaveText("Name");
   await expect(inputNameField).toBeVisible();
 
