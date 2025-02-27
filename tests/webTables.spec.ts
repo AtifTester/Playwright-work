@@ -123,7 +123,7 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
   await inputName.fill("dermatology");
 
   await page.getByRole("button", { name: "Update" }).click();
-  await expect(page.getByRole("row").locator('[id="1"]')).toHaveValue(
+  await expect(page.locator('[id="1"]')).toHaveValue(
     "dermatology"
   );
 
@@ -193,7 +193,9 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   await expect(
     page.getByRole("row", { name: "Sharon Jenkins" }).locator("td").nth(1)
   ).toHaveText("oncology");
+
   await page.getByRole("link", { name: "Specialties" }).click();
+  
   await page
     .getByRole("row", { name: "oncology" })
     .getByRole("button", { name: "Delete" })
