@@ -70,12 +70,10 @@ test.describe("Owner focused test cases", () => {
     ).toContainText(ownerPetName!);
   });
 
-  //This test has a red line under a variable, is this an issue i can fix? The test works though
   test("Test Case 5: Validate pets of the Madison city", async ({ page }) => {
     const cityList = page.getByRole("row", { name: "Madison" });
 
     let emptyPetList: string[] = [];
-    //seems there needs to be a bit of a delay for this code to work
 
     await page.waitForSelector("tbody");
     for (let list of await cityList.all()) {
@@ -150,7 +148,6 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   const allRows = page.locator("tbody tr");
 
   const specialtiesList: string[] = [];
-  //to give loop enough time to fill array
 
   await page.waitForResponse(
     "https://petclinic-api.bondaracademy.com/petclinic/api/specialties"
