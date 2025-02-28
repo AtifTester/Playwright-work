@@ -17,54 +17,41 @@ test.describe("Owner focused test cases", () => {
     await expect(targetRow.locator("tr")).toHaveText("Lucky");
   });
 
-  //note struggled alot with this one. I tried looping but didn't work and ended up doing it this way
+  //Reworked this one to a one line assertion
   test("Test Case 2: Validate owners count of the Madison city", async ({
     page,
   }) => {
-    await page.waitForTimeout(500);
-    const allRows = await page
-      .getByRole("row", { name: "Madison" })
-      .locator("a")
-      .allTextContents();
-
-    expect(allRows.length).toBe(4);
+    await expect(
+      page.getByRole("row", { name: "Madison" }).locator("a")
+    ).toHaveCount(4);
   });
 
   test("Test Case 3: Validate search by Last Name", async ({ page }) => {
     const lastNameField = page.locator("#lastName");
     const findOwnerButton = page.getByRole("button", { name: "Find Owner" });
 
-    await lastNameField.click();
-    await lastNameField.fill("Black");
-    await findOwnerButton.click();
+    const listOfOwners = ["Black", "Davis", "Es", "Playwright"];
 
-    await expect(page.getByRole("row", { name: "6085555387" })).toHaveText(
-      /Black.*/
-    );
+    for (let List of listOfOwners) {
+      await lastNameField.click();
+      await lastNameField.fill(List);
+      await findOwnerButton.click();
 
-    await lastNameField.click();
-    await lastNameField.fill("Davis");
-    await findOwnerButton.click();
-    await expect(page.locator("tbody")).toHaveText(/Davis.*/);
-
-    await lastNameField.click();
-    await lastNameField.fill("Es");
-    await findOwnerButton.click();
-    await expect(page.locator("tbody")).toHaveText(/Es.*/);
-
-    await lastNameField.click();
-    await lastNameField.fill("Playwright");
-    await findOwnerButton.click();
-    await expect(page.locator("app-owner-list")).toContainText(
-      'No owners with LastName starting with "Playwright"'
-    );
+      if (List != "Playwright") {
+        await expect(page.locator("tbody tr td").nth(0)).toContainText(List);
+      } else {
+        await expect(page.locator("app-owner-list")).toContainText(
+          'No owners with LastName starting with "Playwright"'
+        );
+      }
+    }
   });
 
   test("Test Case 4: Validate phone number and pet name on the Owner Information page", async ({
     page,
   }) => {
     const owner = page.getByRole("row", { name: "6085552765" });
-    const ownerPet = await owner.locator("td").last().textContent();
+    const ownerPetName = await owner.locator("td").last().textContent();
     //select owner name
     await owner.locator("a").click();
 
@@ -77,7 +64,10 @@ test.describe("Owner focused test cases", () => {
       .locator("dd")
       .first()
       .textContent();
-    expect(ownerPetInfoName).toEqual(ownerPet?.trim());
+
+    await expect(
+      page.getByRole("row", { name: "Birth Date" }).locator("dd").first()
+    ).toContainText(ownerPetName!);
   });
 
   //This test has a red line under a variable, is this an issue i can fix? The test works though
@@ -86,11 +76,11 @@ test.describe("Owner focused test cases", () => {
 
     let emptyPetList: string[] = [];
     //seems there needs to be a bit of a delay for this code to work
-    await page.waitForTimeout(500);
 
+    await page.waitForSelector("tbody");
     for (let list of await cityList.all()) {
       const cityRows = await list.locator("td").last().textContent();
-      emptyPetList.push(cityRows.trim());
+      emptyPetList.push(cityRows!.trim());
     }
 
     expect(emptyPetList).toEqual(["Leo", "George", "Mulligan", "Freddy"]);
@@ -116,16 +106,14 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
     .click();
   await expect(page.getByRole("heading")).toHaveText("Edit Specialty");
 
-  const inputName = page.locator("#name");
+  const specialtyInputField = page.locator("#name");
 
-  await inputName.click();
-  await inputName.clear();
-  await inputName.fill("dermatology");
+  await specialtyInputField.click();
+  await specialtyInputField.clear();
+  await specialtyInputField.fill("dermatology");
 
   await page.getByRole("button", { name: "Update" }).click();
-  await expect(page.locator('[id="1"]')).toHaveValue(
-    "dermatology"
-  );
+  await expect(page.locator('[id="1"]')).toHaveValue("dermatology");
 
   await page.getByRole("button", { name: "Veterinarians" }).click();
   await page.getByRole("link", { name: "All" }).click();
@@ -141,9 +129,9 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
     .click();
   await expect(page.getByRole("heading")).toHaveText("Edit Specialty");
 
-  await inputName.click();
-  await inputName.clear();
-  await inputName.fill("Surgery");
+  await specialtyInputField.click();
+  await specialtyInputField.clear();
+  await specialtyInputField.fill("Surgery");
   await page.getByRole("button", { name: "Update" }).click();
 });
 
@@ -154,19 +142,23 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   await expect(page.getByRole("heading")).toHaveText("Specialties");
 
   await page.getByRole("button", { name: "Add" }).click();
-  const input = page.locator("#name");
-  await input.click();
-  await input.fill("oncology");
+  const specialtyInputField = page.locator("#name");
+  await specialtyInputField.click();
+  await specialtyInputField.fill("oncology");
   await page.getByRole("button", { name: "Save" }).click();
 
   const allRows = page.locator("tbody tr");
 
   const specialtiesList: string[] = [];
   //to give loop enough time to fill array
-  await page.waitForTimeout(500);
+
+  await page.waitForResponse(
+    "https://petclinic-api.bondaracademy.com/petclinic/api/specialties"
+  );
+
   for (let row of await allRows.all()) {
-    const temp = await row.locator("input").inputValue();
-    specialtiesList.push(temp);
+    const inputName = await row.locator("input").inputValue();
+    specialtiesList.push(inputName);
   }
 
   await page.getByRole("button", { name: "Veterinarians" }).click();
@@ -178,15 +170,12 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
     .click();
   await page.locator(".dropdown-display").click();
 
-  const dropDownData = await page
-    .locator(".dropdown-content label")
-    .allTextContents();
-  expect(specialtiesList).toEqual(dropDownData);
+  //put into an array for matching
+  const dropDownData = page.locator(".dropdown-content label");
 
-  await page
-    .locator(".dropdown-content")
-    .getByRole("checkbox", { name: "oncology" })
-    .check();
+  await expect(dropDownData).toHaveText(specialtiesList);
+
+  await page.getByRole("checkbox", { name: "oncology" }).check();
   await page.locator(".dropdown-display").click();
   await page.getByRole("button", { name: "Save Vet" }).click();
 
@@ -195,7 +184,7 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   ).toHaveText("oncology");
 
   await page.getByRole("link", { name: "Specialties" }).click();
-  
+
   await page
     .getByRole("row", { name: "oncology" })
     .getByRole("button", { name: "Delete" })
