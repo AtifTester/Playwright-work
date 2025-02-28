@@ -21,24 +21,23 @@ test.describe("Owner focused test cases", () => {
   test("Test Case 2: Validate owners count of the Madison city", async ({
     page,
   }) => {
-    await expect(
-      page.getByRole("row", { name: "Madison" }).locator("a")
-    ).toHaveCount(4);
+    await expect(page.getByRole("row", { name: "Madison" })).toHaveCount(4);
   });
 
   test("Test Case 3: Validate search by Last Name", async ({ page }) => {
     const lastNameField = page.locator("#lastName");
-    const findOwnerButton = page.getByRole("button", { name: "Find Owner" });
 
     const listOfOwners = ["Black", "Davis", "Es", "Playwright"];
 
-    for (let List of listOfOwners) {
+    for (let ownerSurname of listOfOwners) {
       await lastNameField.click();
-      await lastNameField.fill(List);
-      await findOwnerButton.click();
+      await lastNameField.fill(ownerSurname);
+      await page.getByRole("button", { name: "Find Owner" }).click();
 
-      if (List != "Playwright") {
-        await expect(page.locator("tbody tr td").nth(0)).toContainText(List);
+      if (ownerSurname != "Playwright") {
+        await expect(
+          page.getByRole("row").nth(1).getByRole("cell").first()
+        ).toContainText(ownerSurname);
       } else {
         await expect(page.locator("app-owner-list")).toContainText(
           'No owners with LastName starting with "Playwright"'
