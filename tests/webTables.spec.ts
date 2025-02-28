@@ -59,12 +59,6 @@ test.describe("Owner focused test cases", () => {
       page.getByRole("row", { name: "Telephone" }).locator("td")
     ).toHaveText("6085552765");
 
-    const ownerPetInfoName = await page
-      .getByRole("row", { name: "Birth Date" })
-      .locator("dd")
-      .first()
-      .textContent();
-
     await expect(
       page.getByRole("row", { name: "Birth Date" }).locator("dd").first()
     ).toContainText(ownerPetName!);
