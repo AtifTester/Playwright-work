@@ -72,7 +72,7 @@ test("Test Case 1: Select the desired date in the calendar", async ({
   await expect(findPetInfo.first()).not.toHaveText("Tom");
 });
 
-test.only("Test Case 2: Select the dates of visits and validate dates order", async ({
+test("Test Case 2: Select the dates of visits and validate dates order", async ({
   page,
 }) => {
   await page.getByRole("row", { name: "6085552654" }).locator("a").click();
