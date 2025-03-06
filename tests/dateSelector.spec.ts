@@ -50,8 +50,8 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
 }) => {
   await page.getByRole("row", { name: "Jean Coleman" }).locator("a").click();
 
-  const samPetDetails = page.locator('app-pet-list', {hasText: "Samantha"})
-  await samPetDetails.getByRole("button", { name: "Add Visit" }).click();
+  const samanthaPetDetails = page.locator('app-pet-list', {hasText: "Samantha"})
+  await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
   await expect(page.getByRole("heading")).toHaveText("New Visit");
 
   const newVisitRow = page.getByRole("row", { name: "cat" });
@@ -73,10 +73,10 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
   await descriptionInput.fill("dermatologists visit");
   await page.getByRole("button", { name: "Add Visit" }).click();
 
-  const petNameDate = samPetDetails.getByRole("row").nth(2).getByRole("cell").first()
+  const petNameDate = samanthaPetDetails.getByRole("row").nth(2).getByRole("cell").first()
   await expect(petNameDate).toHaveText(`${currentYear}-${currentMonth}-${currentDay.padStart(2,"0")}`);
 
-  await samPetDetails.getByRole("button", { name: "Add Visit" }).click();
+  await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
   
   //Create new date instance which focuses is set to past date
   date.setDate(date.getDate() - 45);
@@ -94,24 +94,24 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
     calenderMonthandYear = await page.getByLabel("Choose month and year").textContent();
   }
 
-  await page.locator("mat-calendar").getByText(previousDay).click();
+  await page.getByRole("grid").getByText(previousDay).click();
   await descriptionInput.fill("Massage Therapy");
   await page.getByRole("button", { name: "Add Visit" }).click();
 
   const dermatologyGetDate = await petNameDate.textContent();
 
-  const massageGetDate = await samPetDetails.getByRole("row").nth(3).getByRole("cell").first().textContent();
+  const massageGetDate = await samanthaPetDetails.getByRole("row").nth(3).getByRole("cell").first().textContent();
 
   const dermatologyDate = Date.parse(dermatologyGetDate!);
   const massageDate = Date.parse(massageGetDate!);
   //This checks that derm date is more current than massage Date
   expect(dermatologyDate > massageDate).toBeTruthy();
 
-  const deleteVisitButton = samPetDetails.getByRole("row").getByRole("button", { name: "Delete Visit" });
+  const deleteVisitButton = samanthaPetDetails.getByRole("row").getByRole("button", { name: "Delete Visit" });
 
   await deleteVisitButton.first().click();
   await deleteVisitButton.first().click();
 
-  await expect(samPetDetails.locator('app-visit-list')).not.toContainText("dermatologists visit");
-  await expect(samPetDetails.locator('app-visit-list')).not.toContainText("Massage Therapy");
+  await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText("dermatologists visit");
+  await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText("Massage Therapy");
 });

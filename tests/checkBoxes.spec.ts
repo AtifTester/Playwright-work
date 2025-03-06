@@ -23,7 +23,7 @@ test('Test Case 1: Validate selected specialties', async ({page}) => {
   //select and unselect boxes
   await page.getByRole('checkbox', {name: 'radiology'}).uncheck()
   await page.getByRole('checkbox', {name: 'surgery'}).check()
-  await expect(page.locator('.selected-specialties')).toHaveText('surgery')
+  await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
 
   await page.getByRole('checkbox', {name: 'dentistry'}).check()
  
