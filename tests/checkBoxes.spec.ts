@@ -1,18 +1,20 @@
 import { test, expect } from '@playwright/test';
+import { PageManager } from '../page-objects/PageManager';
 
 test.beforeEach( async({page}) => {
   await page.goto('/')
+  const pm = new PageManager(page)
+
+  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
+  await pm.navigateTo().veterinariansPage()
 })
 
 test('Test Case 1: Validate selected specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
+  const pm = new PageManager(page)
 
-  await page.getByRole('button', {name: "Edit Vet"}).nth(1).click()
+  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Helen Leary')
   await expect(page.locator('.selected-specialties')).toHaveText('radiology')
-
+  
   await page.locator('.dropdown-display').click()
 
   //Validate checkboxes
@@ -22,52 +24,36 @@ test('Test Case 1: Validate selected specialties', async ({page}) => {
 
   //select and unselect boxes
   await page.getByRole('checkbox', {name: 'radiology'}).uncheck()
-  await page.getByRole('checkbox', {name: 'surgery'}).check()
+  await page.getByRole('checkbox', {name: 'Surgery'}).check()
   await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
 
   await page.getByRole('checkbox', {name: 'dentistry'}).check()
  
-  await expect(page.locator('.selected-specialties')).toHaveText(['surgery, dentistry'])
+  await expect(page.locator('.selected-specialties')).toHaveText(['Surgery, dentistry'])
 });
 
 test('Test Case 2: Select all specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
+  const pm = new PageManager(page)
 
-  await page.getByRole('button', {name: "Edit Vet"}).nth(3).click()
-  await expect(page.locator('.selected-specialties')).toHaveText('surgery')
+  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Rafael Ortega')
+  await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
 
   await page.locator('.dropdown-display').click()
 
-  const allBoxes = page.getByRole('checkbox')
-  
-  for(const box of await allBoxes.all()){
-    await box.check()
-    expect(await box.isChecked()).toBeTruthy()  
-  }
+  await pm.onVeterinariansPage().checkAllBoxes()
 
-  await expect(page.locator('.selected-specialties')).toHaveText(['surgery, radiology, dentistry'])
+  await expect(page.locator('.selected-specialties')).toHaveText(['Surgery, radiology, dentistry'])
 });
 
 test('Test Case 3: Unselect all specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
+  const pm = new PageManager(page)
+  
+  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Linda Douglas')
 
-  await page.getByRole('button', {name: "Edit Vet"}).nth(2).click()
-  await expect(page.locator('.selected-specialties')).toHaveText('dentistry, surgery')
-
+  await expect(page.locator('.selected-specialties')).toHaveText('dentistry, Surgery')
   await page.locator('.dropdown-display').click()
 
-  const allBoxes = page.getByRole('checkbox')
-  
-  for(const box of await allBoxes.all()){
-    await box.uncheck()
-    expect(await box.isChecked()).toBeFalsy()  
-  }
+  await pm.onVeterinariansPage().unCheckAllBoxes()
 
   await expect(page.locator('.selected-specialties')).toBeEmpty()
 });

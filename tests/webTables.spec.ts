@@ -1,12 +1,16 @@
 import { test, expect } from "@playwright/test";
+import { NavigationPage } from "../page-objects/navigationPage";
+import { SpecialtiesPage } from "../page-objects/specialtiesPage";
 import { text } from "stream/consumers";
+import { PageManager } from "../page-objects/PageManager";
 
 test.describe("Owner focused test cases", () => {
   test.beforeEach(async ({ page }) => {
+    const pm = new PageManager(page)
+
     await page.goto("/");
     await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
-    await page.getByText("Owners").click();
-    await page.getByRole("link", { name: "Search" }).click();
+    pm.navigateTo().ownersPage()
   });
 
   test("Test Case 1: Validate the pet name city of the owner", async ({
@@ -17,7 +21,6 @@ test.describe("Owner focused test cases", () => {
     await expect(targetRow.locator("tr")).toHaveText("Lucky");
   });
 
-  //Reworked this one to a one line assertion
   test("Test Case 2: Validate owners count of the Madison city", async ({
     page,
   }) => {
@@ -26,7 +29,6 @@ test.describe("Owner focused test cases", () => {
 
   test("Test Case 3: Validate search by Last Name", async ({ page }) => {
     const lastNameField = page.locator("#lastName");
-
     const listOfOwners = ["Black", "Davis", "Es", "Playwright"];
 
     for (let ownerSurname of listOfOwners) {
@@ -54,13 +56,9 @@ test.describe("Owner focused test cases", () => {
     //select owner name
     await owner.locator("a").click();
 
-    await expect(
-      page.getByRole("row", { name: "Telephone" }).locator("td")
-    ).toHaveText("6085552765");
+    await expect(page.getByRole("row", { name: "Telephone" }).locator("td")).toHaveText("6085552765");
 
-    await expect(
-      page.getByRole("row", { name: "Birth Date" }).locator("dd").first()
-    ).toContainText(ownerPetName!);
+    await expect(page.getByRole("row", { name: "Birth Date" }).locator("dd").first()).toContainText(ownerPetName!);
   });
 
   test("Test Case 5: Validate pets of the Madison city", async ({ page }) => {
@@ -79,58 +77,37 @@ test.describe("Owner focused test cases", () => {
 });
 
 test("Test Case 6: Validate specialty update", async ({ page }) => {
+  const pm = new PageManager(page)
+
   await page.goto("/");
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
-  await page.getByRole("button", { name: "Veterinarians" }).click();
-  await page.getByRole("link", { name: "All" }).click();
+  pm.navigateTo().veterinariansPage()
 
   //checks table, unique row rafael, and checks for surgery
   const rafaelOwner = page.getByRole("row", { name: "Rafael Ortega" });
-  await expect(rafaelOwner.locator("td").nth(1)).toHaveText("Surgery");
+  await expect(rafaelOwner.getByRole("cell").nth(1)).toHaveText("Surgery");
 
-  await page.getByRole("link", { name: "Specialties" }).click();
-  await expect(page.getByRole("heading")).toHaveText("Specialties");
-  //selects the row with surgery
-  await page
-    .getByRole("row", { name: "Surgery" })
-    .getByRole("button", { name: "Edit" })
-    .click();
-  await expect(page.getByRole("heading")).toHaveText("Edit Specialty");
+  await pm.navigateTo().specialtiesPage()
+  await pm.onSpecialtiesPage().specialitieRowToEdit('Surgery')
+  await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('dermatology')
 
-  const specialtyInputField = page.locator("#name");
-
-  await specialtyInputField.click();
-  await specialtyInputField.clear();
-  await specialtyInputField.fill("dermatology");
-
-  await page.getByRole("button", { name: "Update" }).click();
   await expect(page.locator('[id="1"]')).toHaveValue("dermatology");
 
-  await page.getByRole("button", { name: "Veterinarians" }).click();
-  await page.getByRole("link", { name: "All" }).click();
+  await pm.navigateTo().veterinariansPage()
   await expect(rafaelOwner.locator("td").nth(1)).toHaveText("dermatology");
 
   //Repeat steps to revert change
-  await page.getByRole("link", { name: "Specialties" }).click();
-  await expect(page.getByRole("heading")).toHaveText("Specialties");
-
-  await page
-    .getByRole("row", { name: "Dermatology" })
-    .getByRole("button", { name: "Edit" })
-    .click();
-  await expect(page.getByRole("heading")).toHaveText("Edit Specialty");
-
-  await specialtyInputField.click();
-  await specialtyInputField.clear();
-  await specialtyInputField.fill("Surgery");
-  await page.getByRole("button", { name: "Update" }).click();
+  await pm.navigateTo().specialtiesPage()
+  await pm.onSpecialtiesPage().specialitieRowToEdit('Dermatology')
+  await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('Surgery')
 });
 
 test("Test Case 7: Validate specialty lists", async ({ page }) => {
+  const pm = new PageManager(page)
+
   await page.goto("/");
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
-  await page.getByRole("link", { name: "Specialties" }).click();
-  await expect(page.getByRole("heading")).toHaveText("Specialties");
+  await pm.navigateTo().specialtiesPage()
 
   await page.getByRole("button", { name: "Add" }).click();
   const specialtyInputField = page.locator("#name");
@@ -139,25 +116,17 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click();
 
   const allRows = page.locator("tbody tr");
-
   const specialtiesList: string[] = [];
-
-  await page.waitForResponse(
-    "https://petclinic-api.bondaracademy.com/petclinic/api/specialties"
-  );
+  await page.waitForResponse("https://petclinic-api.bondaracademy.com/petclinic/api/specialties");
 
   for (let row of await allRows.all()) {
     const inputName = await row.locator("input").inputValue();
     specialtiesList.push(inputName);
   }
 
-  await page.getByRole("button", { name: "Veterinarians" }).click();
-  await page.getByRole("link", { name: "All" }).click();
+  await pm.navigateTo().veterinariansPage()
 
-  await page
-    .getByRole("row", { name: "Sharon Jenkins" })
-    .getByRole("button", { name: "Edit Vet" })
-    .click();
+  await page.getByRole("row", { name: "Sharon Jenkins" }).getByRole("button", { name: "Edit Vet" }).click();
   await page.locator(".dropdown-display").click();
 
   //put into an array for matching
@@ -169,21 +138,13 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   await page.locator(".dropdown-display").click();
   await page.getByRole("button", { name: "Save Vet" }).click();
 
-  await expect(
-    page.getByRole("row", { name: "Sharon Jenkins" }).locator("td").nth(1)
-  ).toHaveText("oncology");
+  await expect(page.getByRole("row", { name: "Sharon Jenkins" }).getByRole("cell").nth(1)).toHaveText("oncology");
 
-  await page.getByRole("link", { name: "Specialties" }).click();
+  await pm.navigateTo().specialtiesPage()
 
-  await page
-    .getByRole("row", { name: "oncology" })
-    .getByRole("button", { name: "Delete" })
-    .click();
+  await page.getByRole("row", { name: "oncology" }).getByRole("button", { name: "Delete" }).click();
 
-  await page.getByRole("button", { name: "Veterinarians" }).click();
-  await page.getByRole("link", { name: "All" }).click();
+  await pm.navigateTo().veterinariansPage()
 
-  await expect(
-    page.getByRole("row", { name: "Sharon Jenkins" }).locator("td").nth(1)
-  ).toBeEmpty();
+  await expect(page.getByRole("row", { name: "Sharon Jenkins" }).getByRole("cell").nth(1)).toBeEmpty();
 });

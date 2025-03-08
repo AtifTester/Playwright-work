@@ -1,22 +1,22 @@
 import { test, expect } from "@playwright/test";
 import { text } from "stream/consumers";
+import { PageManager } from "../page-objects/PageManager";
 
 test.beforeEach(async ({ page }) => {
+  const pm = new PageManager(page)
   await page.goto("/");
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
-  await page.getByText("Owners").click();
-  await page.getByRole("link", { name: "Search" }).click();
+  await pm.navigateTo().ownersPage()
 });
 
 
-test("Test Case 1: Select the desired date in the calendar", async ({
-  page,
-}) => {
-  await page.getByRole("row", { name: "Harold Davis" }).locator("a").click();
+test("Test Case 1: Select the desired date in the calendar", async ({page}) => {
+  const pm = new PageManager(page)
+
+  await pm.onOwnersPage().selectOwner('Harold Davis')
   await page.getByRole("button", { name: "Add new pet" }).click();
 
   const inputPetName = page.locator("input#name");
-
   await inputPetName.click();
   await inputPetName.pressSequentially("Tom");
 
@@ -48,7 +48,14 @@ test("Test Case 1: Select the desired date in the calendar", async ({
 test("Test Case 2: Select the dates of visits and validate dates order", async ({
   page,
 }) => {
-  await page.getByRole("row", { name: "Jean Coleman" }).locator("a").click();
+  const pm = new PageManager(page)
+
+  const date = new Date();
+  const currentDay = date.getDate().toString()
+  const currentMonth = date.toLocaleString('En-US', {month : '2-digit'})
+  const currentYear = date.getFullYear().toString();
+
+  await pm.onOwnersPage().selectOwner('Jean Coleman')
 
   const samanthaPetDetails = page.locator('app-pet-list', {hasText: "Samantha"})
   await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
@@ -58,16 +65,8 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
   await expect(newVisitRow.getByRole("cell").first()).toHaveText("Samantha");
   await expect(newVisitRow.getByRole("cell").last()).toHaveText("Jean Coleman");
   
-  await page.getByLabel('Open calendar').click()
-
-  const date = new Date();
-  const currentDay = date.getDate().toString()
-  const currentMonth = date.toLocaleString('En-US', {month : '2-digit'})
-  const currentYear = date.getFullYear().toString();
-  await page.getByText(currentDay, { exact: true }).click();
-
-  await expect(page.locator('[name="date"]')).toHaveValue(
-    `${currentYear}/${currentMonth}/${currentDay.padStart(2,"0")}`);
+  await pm.onPetDetailsPage().selectDateFromCalenderDaysAgo(0)
+  await expect(page.locator('[name="date"]')).toHaveValue(`${currentYear}/${currentMonth}/${currentDay.padStart(2,"0")}`);
 
   const descriptionInput = page.locator('[name="description"]')
   await descriptionInput.fill("dermatologists visit");
@@ -79,27 +78,12 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
   await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
   
   //Create new date instance which focuses is set to past date
-  date.setDate(date.getDate() - 45);
-  const previousDay = date.getDate().toString();
-  const previousMonth = date.toLocaleString('En-US', {month : '2-digit'})
-  const previousYear = date.getFullYear().toString();
+  await pm.onPetDetailsPage().selectDateFromCalenderDaysAgo(45)
 
-  const expectedDate = `${previousMonth} ${previousYear}`;
-
-  await page.getByLabel("Open calendar").click();
-  let calenderMonthandYear = await page.getByLabel("Choose month and year").textContent();
-
-  while (!calenderMonthandYear!.includes(expectedDate)) {
-    await page.getByLabel('Previous month').click();
-    calenderMonthandYear = await page.getByLabel("Choose month and year").textContent();
-  }
-
-  await page.getByRole("grid").getByText(previousDay).click();
   await descriptionInput.fill("Massage Therapy");
   await page.getByRole("button", { name: "Add Visit" }).click();
 
   const dermatologyGetDate = await petNameDate.textContent();
-
   const massageGetDate = await samanthaPetDetails.getByRole("row").nth(3).getByRole("cell").first().textContent();
 
   const dermatologyDate = Date.parse(dermatologyGetDate!);
