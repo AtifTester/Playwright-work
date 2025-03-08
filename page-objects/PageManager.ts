@@ -7,10 +7,6 @@ import { PetTypePage } from '../page-objects/petTypesPage';
 import { SpecialtiesPage } from "../page-objects/specialtiesPage";
 import { VeterinariansPage } from "../page-objects/VeterinariansPage";
 
-
-
-
-
 export class PageManager{
     private readonly page: Page
     private readonly navigationPage : NavigationPage

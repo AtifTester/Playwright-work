@@ -109,16 +109,13 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
   await pm.navigateTo().specialtiesPage()
 
-  await page.getByRole("button", { name: "Add" }).click();
-  const specialtyInputField = page.locator("#name");
-  await specialtyInputField.click();
-  await specialtyInputField.fill("oncology");
-  await page.getByRole("button", { name: "Save" }).click();
+  pm.onSpecialtiesPage().addASpecialtieRowAndSave('oncology')
 
   const allRows = page.locator("tbody tr");
   const specialtiesList: string[] = [];
-  await page.waitForResponse("https://petclinic-api.bondaracademy.com/petclinic/api/specialties");
 
+  await page.waitForResponse("https://petclinic-api.bondaracademy.com/petclinic/api/specialties");
+  
   for (let row of await allRows.all()) {
     const inputName = await row.locator("input").inputValue();
     specialtiesList.push(inputName);

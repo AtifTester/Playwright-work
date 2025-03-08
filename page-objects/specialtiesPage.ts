@@ -22,5 +22,14 @@ async specialitieRowToEdit(specialtie)
     await expect(this.page.getByRole("heading")).toHaveText("Edit Specialty");
 }
 
+async addASpecialtieRowAndSave(specialityToAdd: string)
+{
+    await this.page.getByRole("button", { name: "Add" }).click();
+    const specialtyInputField = this.page.locator("#name");
+     await specialtyInputField.click();
+    await specialtyInputField.fill(specialityToAdd);
+    await this.page.getByRole("button", { name: "Save" }).click();
+}
+
 }
 
