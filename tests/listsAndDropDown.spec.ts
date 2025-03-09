@@ -40,8 +40,8 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
   const pm = new PageManager(page)
 
   await pm.onOwnersPage().selectOwner('Eduardo Rodriquez')
-  await pm.onOwnerInformationPage().selectEditPetNameToEditAndVerifyName('Rosy')
-
+  await pm.onOwnerInformationPage().selectEditPetNameToEdit('Rosy')
+  await expect(page.locator("#name")).toHaveValue('Rosy');
   const typeField = page.locator("#type1");
   await expect(typeField).toHaveValue("dog");
 
@@ -50,7 +50,8 @@ test("Test Case 2: Validate the pet type update", async ({ page }) => {
 
   await expect(page.locator("app-pet-list", { hasText: "Rosy" }).locator("dd").nth(2)).toHaveText("bird");
 
-  await pm.onOwnerInformationPage().selectEditPetNameToEditAndVerifyName('Rosy')
+  await pm.onOwnerInformationPage().selectEditPetNameToEdit('Rosy')
+  await expect(page.locator("#name")).toHaveValue('Rosy');
   await expect(typeField).toHaveValue("bird");
 
   await pm.onPetDetailsPage().selectPetTypeAndVerify('dog')

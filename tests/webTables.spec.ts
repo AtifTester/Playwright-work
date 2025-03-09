@@ -102,20 +102,20 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
   await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('Surgery')
 });
 
-test("Test Case 7: Validate specialty lists", async ({ page }) => {
+test.only("Test Case 7: Validate specialty lists", async ({ page }) => {
   const pm = new PageManager(page)
 
   await page.goto("/");
   await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
   await pm.navigateTo().specialtiesPage()
 
-  pm.onSpecialtiesPage().addASpecialtieRowAndSave('oncology')
+  await pm.onSpecialtiesPage().addASpecialtieRowAndSave('oncology')
 
   const allRows = page.locator("tbody tr");
   const specialtiesList: string[] = [];
 
   await page.waitForResponse("https://petclinic-api.bondaracademy.com/petclinic/api/specialties");
-  
+
   for (let row of await allRows.all()) {
     const inputName = await row.locator("input").inputValue();
     specialtiesList.push(inputName);

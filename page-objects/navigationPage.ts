@@ -15,7 +15,7 @@ async ownersPage(){
 
 async veterinariansPage(){
     await this.page.getByRole("button", { name: "Veterinarians" }).click();
-    await this.page.getByRole("link", { name: "All" }).click();
+    await this.page.getByText('All').click();
     await expect(this.page.getByRole('heading')).toHaveText('Veterinarians')
 }
 
