@@ -14,6 +14,8 @@ async selectPetTypeAndVerify(petType: string){
     await dropDownField.selectOption(petType);
     await expect(typeField).toHaveValue(petType);
     await expect(dropDownField).toHaveValue(petType);
+
+    await expect(this.page.locator("#name")).toHaveValue("Rosy");
 }
 
 async selectDateFromCalenderDaysAgo(datePicked: number)
