@@ -30,7 +30,7 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
   await pm.onPetTypePage().selectPetTypeEditButton('dog')
 
   await pm.onPetTypePage().setPetInputName('moose')
-  await pm.onPetTypePage().validateEditPetTypePageInputValueOrWarningIfLeftBlank('moose')
+  await pm.onPetTypePage().validateEditPetTypePageInputValueOrNameRequestIfBlank('moose')
   await pm.onPetTypePage().editPetTypePageButtonSelector('cancel')
  
   await pm.onPetTypePage().validateCorrectPetTypeNameInSelectedRow('dog', 2)
@@ -42,7 +42,7 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
     await pm.onPetTypePage().selectPetTypeEditButton('lizard')
     await pm.onPetTypePage().setPetInputName('')
 
-    await pm.onPetTypePage().validateEditPetTypePageInputValueOrWarningIfLeftBlank('')
+    await pm.onPetTypePage().validateEditPetTypePageInputValueOrNameRequestIfBlank('')
     await pm.onPetTypePage().editPetTypePageButtonSelector('update')
     await pm.onPetTypePage().validateCurrentPetTypePageHeaderToHave('Edit Pet Type')
 

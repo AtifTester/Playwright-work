@@ -58,7 +58,7 @@ async validateCorrectPetTypeNameInSelectedRow(validatePetTypeValue: string, tabl
     await expect(this.page.getByRole('row').nth(tableRowToSelect).locator('input')).toHaveValue(validatePetTypeValue)
 }
 
-async validateEditPetTypePageInputValueOrWarningIfLeftBlank(textToValidateInEditPetTypePage: string)
+async validateEditPetTypePageInputValueOrNameRequestIfBlank(textToValidateInEditPetTypePage: string)
 {
     if(textToValidateInEditPetTypePage == '')
         await expect(this.page.locator('.help-block')).toHaveText('Name is required')

@@ -42,7 +42,7 @@ async deleteASpecialityByName(specialityName: string)
     await this.page.getByRole("row", { name: specialityName}).getByRole("button", { name: "Delete" }).click();
 }
 
-async compareSpecialityRowDataToVetenerianSpecialtyData(vetenarianName: string)
+async compareSpecialityRowDataToVetenerianSpecialtyDataForVetenarian(vetenarianName: string)
 {
     const pm = new PageManager(this.page)
 

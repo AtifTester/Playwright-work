@@ -63,7 +63,7 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
 
   //Repeat steps to revert change
   await pm.navigateTo().specialtiesPage()
-  await pm.onSpecialtiesPage().clickEditButtonForSpecialty('Dermatology')
+  await pm.onSpecialtiesPage().clickEditButtonForSpecialty('dermatology')
   await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('surgery')
 });
 
@@ -76,7 +76,7 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
 
   await pm.onSpecialtiesPage().addASpecialtieRowAndSave('oncology')
 
-  await pm.onSpecialtiesPage().compareSpecialityRowDataToVetenerianSpecialtyData('Sharon Jenkins')
+  await pm.onSpecialtiesPage().compareSpecialityRowDataToVetenerianSpecialtyDataForVetenarian('Sharon Jenkins')
 
   await pm.onSpecialtiesPage().checkASpecialtyForVetenarianAndSave('oncology')
 
