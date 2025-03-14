@@ -1,59 +1,47 @@
 import { test, expect } from '@playwright/test';
-import { PageManager } from '../page-objects/PageManager';
+import { PageManager } from '../page-objects/pageManager';
 
 test.beforeEach( async({page}) => {
-  await page.goto('/')
   const pm = new PageManager(page)
 
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
+  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
   await pm.navigateTo().veterinariansPage()
 })
 
 test('Test Case 1: Validate selected specialties', async ({page}) => {
   const pm = new PageManager(page)
 
-  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Helen Leary')
-  await expect(page.locator('.selected-specialties')).toHaveText('radiology')
-  
-  await page.locator('.dropdown-display').click()
-
-  //Validate checkboxes
-  expect(await page.getByRole('checkbox', {name: 'radiology'}).isChecked()).toBeTruthy()
-  expect(await page.getByRole('checkbox', {name: 'surgery'}).isChecked()).toBeFalsy()
-  expect(await page.getByRole('checkbox', {name: 'dentistry'}).isChecked()).toBeFalsy()
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Helen Leary')
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('radiology')
+  await pm.onVeterinariansPage().clickVeterinarianSpecialitiesDropDownAndValidateCheckBoxStatus()
 
   //select and unselect boxes
-  await page.getByRole('checkbox', {name: 'radiology'}).uncheck()
-  await page.getByRole('checkbox', {name: 'Surgery'}).check()
-  await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
+  await pm.onVeterinariansPage().unCheckBoxVeterinarianSpecialitiesDropDown('radiology')
+  await pm.onVeterinariansPage().checkBoxVeterinarianSpecialitiesDropDown('surgery')
 
-  await page.getByRole('checkbox', {name: 'dentistry'}).check()
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('surgery')
+
+  await pm.onVeterinariansPage().checkBoxVeterinarianSpecialitiesDropDown('dentistry')
  
-  await expect(page.locator('.selected-specialties')).toHaveText(['Surgery, dentistry'])
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('surgery, dentistry')
 });
 
 test('Test Case 2: Select all specialties', async ({page}) => {
   const pm = new PageManager(page)
 
-  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Rafael Ortega')
-  await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Rafael Ortega')
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('surgery')
 
-  await page.locator('.dropdown-display').click()
-
-  await pm.onVeterinariansPage().checkAllBoxes()
-
-  await expect(page.locator('.selected-specialties')).toHaveText(['Surgery, radiology, dentistry'])
+  await pm.onVeterinariansPage().selectDropDownAndcheckAllBoxes()
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('surgery, radiology, dentistry')
 });
 
 test('Test Case 3: Unselect all specialties', async ({page}) => {
   const pm = new PageManager(page)
   
-  await pm.onVeterinariansPage().selectAVeterinarianToEdit('Linda Douglas')
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Linda Douglas')
 
-  await expect(page.locator('.selected-specialties')).toHaveText('dentistry, Surgery')
-  await page.locator('.dropdown-display').click()
+  await pm.onVeterinariansPage().validateEditVeterinarianToHaveSpecialty('dentistry, surgery')
 
-  await pm.onVeterinariansPage().unCheckAllBoxes()
-
-  await expect(page.locator('.selected-specialties')).toBeEmpty()
+  await pm.onVeterinariansPage().selectDropDownAndUncheckAllBoxesAndValidateEmpty()
 });

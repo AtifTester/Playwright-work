@@ -1,34 +1,27 @@
 import { test, expect } from "@playwright/test";
-import { PageManager } from "../page-objects/PageManager";
+import { PageManager } from "../page-objects/pageManager";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
+  const pm = new PageManager(page)
+  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
 });
 
 test("Test Case: Add and delete pet type", async ({ page }) => {
   const pm = new PageManager(page)
 
   await pm.navigateTo().petTypesPage()
+  await pm.onPetTypePage().selectPetTypeButton('Add')
 
-  await page.getByRole("button", { name: "Add" }).click();
+  await pm.onPetTypePage().validateCurrentPetTypePageHeaderToHave('New Pet Type')
+  await pm.onPetTypePage().validatePetTypeAddHasNameAndVisibleInput()
 
-  const inputNameField = page.locator("#name");
+  await pm.onPetTypePage().addPetTypeToList('pig')
+  await pm.onPetTypePage().selectPetTypeButton('save')
 
-  await expect(page.locator("app-pettype-add").getByRole("heading")).toHaveText("New Pet Type");
-  await expect(page.locator("app-pettype-add label")).toHaveText("Name");
-  await expect(inputNameField).toBeVisible();
+  await pm.onPetTypePage().validateIfPetTypeLastRowHasValue('pig', true)
 
-  await inputNameField.fill("pig");
-  await page.getByRole("button", { name: "save" }).click();
+  await pm.onPetTypePage().acceptPromptAfterDeleteButton()
 
-  await expect(page.getByRole("table").locator("tr input").last()).toHaveValue("pig");
-
-  page.on("dialog", (dialog) => {
-    expect(dialog.message()).toEqual("Delete the pet type?");
-    dialog.accept();
-  });
-
-  await page.getByRole("button", { name: "Delete" }).last().click();
-  await expect(page.getByRole("table").locator("tr input").last()).not.toHaveValue("pig");
+  await pm.onPetTypePage().deleteLastRowInPetTypeTable()
+  await pm.onPetTypePage().validateIfPetTypeLastRowHasValue('pig', false)
 });

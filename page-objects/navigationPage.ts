@@ -7,6 +7,12 @@ constructor(page: Page){
     this.page = page
 }
 
+async runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+{
+    await this.page.goto("/");
+    await expect(this.page.locator(".title")).toHaveText("Welcome to Petclinic");
+}
+
 async ownersPage(){
     await this.page.getByText("Owners").click();
     await this.page.getByRole("link", { name: "Search" }).click();

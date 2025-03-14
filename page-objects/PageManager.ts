@@ -1,13 +1,14 @@
 import {Page} from '@playwright/test'
-import {NavigationPage} from "../page-objects/navigationPage"
-import {OwnersInformationPage} from "../page-objects/ownerInformationPage"
-import {OwnersPage} from '../page-objects/ownersPage'
-import { PetDetailsPage } from "../page-objects/petDetailsPage";
-import { PetTypePage } from '../page-objects/petTypesPage';
-import { SpecialtiesPage } from "../page-objects/specialtiesPage";
-import { VeterinariansPage } from "../page-objects/VeterinariansPage";
+import {NavigationPage} from "./navigationPage"
+import {OwnersInformationPage} from "./ownerInformationPage"
+import {OwnersPage} from './ownersPage'
+import {PetDetailsPage} from "./petDetailsPage";
+import {PetTypePage} from './petTypesPage';
+import {SpecialtiesPage} from "./specialtiesPage";
+import {VeterinariansPage} from "./veterinariansPage";
 
-export class PageManager{
+export class PageManager
+{
     private readonly page: Page
     private readonly navigationPage : NavigationPage
     private readonly ownersInformationPage : OwnersInformationPage
@@ -18,15 +19,16 @@ export class PageManager{
     private readonly veterinariansPage : VeterinariansPage
     
 
-    constructor(page: Page){
+    constructor(page: Page)
+    {
         this.page = page
-        this.navigationPage = new NavigationPage(page)
-        this.ownersInformationPage = new OwnersInformationPage(page)
-        this.ownersPage = new OwnersPage(page)
-        this.petDetailsPage = new PetDetailsPage(page)
-        this.petTypePage = new PetTypePage(page)
-        this.specialtiesPage = new SpecialtiesPage(page)
-        this.veterinariansPage = new VeterinariansPage(page)
+        this.navigationPage = new NavigationPage(this.page)
+        this.ownersInformationPage = new OwnersInformationPage(this.page)
+        this.ownersPage = new OwnersPage(this.page)
+        this.petDetailsPage = new PetDetailsPage(this.page)
+        this.petTypePage = new PetTypePage(this.page)
+        this.specialtiesPage = new SpecialtiesPage(this.page)
+        this.veterinariansPage = new VeterinariansPage(this.page)
     }
 
     navigateTo()

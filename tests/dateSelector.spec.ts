@@ -1,11 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { text } from "stream/consumers";
-import { PageManager } from "../page-objects/PageManager";
+import { PageManager } from "../page-objects/pageManager";
 
 test.beforeEach(async ({ page }) => {
   const pm = new PageManager(page)
-  await page.goto("/");
-  await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
+  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
   await pm.navigateTo().ownersPage()
 });
 
@@ -13,36 +12,16 @@ test.beforeEach(async ({ page }) => {
 test("Test Case 1: Select the desired date in the calendar", async ({page}) => {
   const pm = new PageManager(page)
 
-  await pm.onOwnersPage().selectOwner('Harold Davis')
-  await page.getByRole("button", { name: "Add new pet" }).click();
+  await pm.onOwnersPage().selectOwnerBasedOffName('Harold Davis')
+  await pm.onOwnersPage().ownerPageButtonSelector('Add new pet')
 
-  const inputPetName = page.locator("input#name");
-  await inputPetName.click();
-  await inputPetName.pressSequentially("Tom");
+  await pm.onOwnerInformationPage().addNameToInputAndValidateTextIconChange('Tom')
+  await pm.onOwnerInformationPage().pickASpecificDateAndValidateDoBField('2014', 'May', '2', '2014/05/02')
+  await pm.onOwnerInformationPage().selectAPetTypeAndSave('dog')
 
-  await expect(page.locator("form span").first()).toHaveClass(/glyphicon-ok/);
+  await pm.onOwnersPage().validatePetHasNewInfoInOwnerPage('Tom')
 
-  //Select Calender button
-  await page.getByLabel('Open calendar').click()
-  await page.getByLabel('Choose month and year').click()
-  await page.getByLabel('Previous 24 years').click()
-  await page.getByText('2014').click()
-  await page.getByText('May').click()
-  await page.getByText('2', {exact: true}).click()
-
-  await expect(page.locator('[name="birthDate"]')).toHaveValue("2014/05/02");
-
-  await page.locator("select").selectOption("dog");
-  await page.getByRole("button", { name: "Save Pet" }).click();
-
-  const petTomPageSection = page.getByRole("cell", { name: "Tom" })
-  const petInfoDetail = petTomPageSection.locator("dd");
-  await expect(petInfoDetail.first()).toHaveText("Tom");
-  await expect(petInfoDetail.nth(1)).toHaveText("2014-05-02");
-  await expect(petInfoDetail.last()).toHaveText("dog");
-
-  await petTomPageSection.getByRole("button", { name: "Delete Pet" }).click();
-  await expect(petTomPageSection).not.toBeVisible()
+  await pm.onOwnersPage().deleteAPetFromOwnerPageAndVerifyItNoLongerExists('Tom')
 });
 
 test("Test Case 2: Select the dates of visits and validate dates order", async ({
@@ -50,52 +29,31 @@ test("Test Case 2: Select the dates of visits and validate dates order", async (
 }) => {
   const pm = new PageManager(page)
 
-  const date = new Date();
-  const currentDay = date.getDate().toString()
-  const currentMonth = date.toLocaleString('En-US', {month : '2-digit'})
-  const currentYear = date.getFullYear().toString();
+  await pm.onOwnersPage().selectOwnerBasedOffName('Jean Coleman')
 
-  await pm.onOwnersPage().selectOwner('Jean Coleman')
+  await pm.onOwnerInformationPage().clickAddNewVisitorButtonForPet('Samantha')
 
-  const samanthaPetDetails = page.locator('app-pet-list', {hasText: "Samantha"})
-  await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
-  await expect(page.getByRole("heading")).toHaveText("New Visit");
-
-  const newVisitRow = page.getByRole("row", { name: "cat" });
-  await expect(newVisitRow.getByRole("cell").first()).toHaveText("Samantha");
-  await expect(newVisitRow.getByRole("cell").last()).toHaveText("Jean Coleman");
+  await pm.onPetDetailsPage().validatePetNewVisitPetNameAndOwner('Samantha', 'Jean Coleman')
   
   await pm.onPetDetailsPage().selectDateFromCalenderDaysAgo(0)
-  await expect(page.locator('[name="date"]')).toHaveValue(`${currentYear}/${currentMonth}/${currentDay.padStart(2,"0")}`);
+  await pm.onPetDetailsPage().validateCurrentDatePopulatedInPetDetailsDoBField()
 
-  const descriptionInput = page.locator('[name="description"]')
-  await descriptionInput.fill("dermatologists visit");
-  await page.getByRole("button", { name: "Add Visit" }).click();
+  await pm.onPetDetailsPage().addDescriptionForNewVisitPetDetail('dermatologists visit')
+  await pm.onPetDetailsPage().petDetailsPageButtonSelector('Add Visit')
 
-  const petNameDate = samanthaPetDetails.getByRole("row").nth(2).getByRole("cell").first()
-  await expect(petNameDate).toHaveText(`${currentYear}-${currentMonth}-${currentDay.padStart(2,"0")}`);
+  await pm.onPetDetailsPage().verifyCurrentDateNewVisitForPetName('Samantha')
 
-  await samanthaPetDetails.getByRole("button", { name: "Add Visit" }).click();
+  await pm.onOwnerInformationPage().clickAddNewVisitorButtonForPet('Samantha')
   
-  //Create new date instance which focuses is set to past date
   await pm.onPetDetailsPage().selectDateFromCalenderDaysAgo(45)
+  await pm.onPetDetailsPage().addDescriptionForNewVisitPetDetail('Massage Therapy')
+  await pm.onPetDetailsPage().petDetailsPageButtonSelector('Add Visit')
 
-  await descriptionInput.fill("Massage Therapy");
-  await page.getByRole("button", { name: "Add Visit" }).click();
+  await pm.onPetDetailsPage().validateMostRecentDateIsTopOfVisitListToBeTrueForPet('Samantha')
 
-  const dermatologyGetDate = await petNameDate.textContent();
-  const massageGetDate = await samanthaPetDetails.getByRole("row").nth(3).getByRole("cell").first().textContent();
+  await pm.onPetDetailsPage().deleteLatestVisitorForPet('Samantha')
+  await pm.onPetDetailsPage().deleteLatestVisitorForPet('Samantha')
 
-  const dermatologyDate = Date.parse(dermatologyGetDate!);
-  const massageDate = Date.parse(massageGetDate!);
-  //This checks that derm date is more current than massage Date
-  expect(dermatologyDate > massageDate).toBeTruthy();
-
-  const deleteVisitButton = samanthaPetDetails.getByRole("row").getByRole("button", { name: "Delete Visit" });
-
-  await deleteVisitButton.first().click();
-  await deleteVisitButton.first().click();
-
-  await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText("dermatologists visit");
-  await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText("Massage Therapy");
+  await pm.onPetDetailsPage().validateNewVisitNoLongerExistsForPetNameWithDescription('Samantha', 'dermatologists visit')
+  await pm.onPetDetailsPage().validateNewVisitNoLongerExistsForPetNameWithDescription('Samantha', 'Massage Therapy')
 });
