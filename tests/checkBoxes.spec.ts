@@ -1,73 +1,48 @@
 import { test, expect } from '@playwright/test';
+import { PageManager } from '../page-objects/pageManager';
 
 test.beforeEach( async({page}) => {
-  await page.goto('/')
+  const pm = new PageManager(page)
+
+  await pm.navigateTo().openHomePage()
+  await pm.navigateTo().veterinariansPage()
 })
 
 test('Test Case 1: Validate selected specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
+  const pm = new PageManager(page)
 
-  await page.getByRole('button', {name: "Edit Vet"}).nth(1).click()
-  await expect(page.locator('.selected-specialties')).toHaveText('radiology')
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Helen Leary')
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('radiology')
 
-  await page.locator('.dropdown-display').click()
-
-  //Validate checkboxes
-  expect(await page.getByRole('checkbox', {name: 'radiology'}).isChecked()).toBeTruthy()
-  expect(await page.getByRole('checkbox', {name: 'surgery'}).isChecked()).toBeFalsy()
-  expect(await page.getByRole('checkbox', {name: 'dentistry'}).isChecked()).toBeFalsy()
+  await pm.onEditVeterinariansPage().clickVeterinarianSpecialitiesDropDownAndValidateCheckBoxStatus()
 
   //select and unselect boxes
-  await page.getByRole('checkbox', {name: 'radiology'}).uncheck()
-  await page.getByRole('checkbox', {name: 'surgery'}).check()
-  await expect(page.locator('.selected-specialties')).toHaveText('Surgery')
+  await pm.onEditVeterinariansPage().unCheckBoxVeterinarianSpecialitiesDropDown('radiology')
+  await pm.onEditVeterinariansPage().checkBoxVeterinarianSpecialitiesDropDown('surgery')
 
-  await page.getByRole('checkbox', {name: 'dentistry'}).check()
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('surgery')
+
+  await pm.onEditVeterinariansPage().checkBoxVeterinarianSpecialitiesDropDown('dentistry')
  
-  await expect(page.locator('.selected-specialties')).toHaveText(['surgery, dentistry'])
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('surgery, dentistry')
 });
 
 test('Test Case 2: Select all specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
+  const pm = new PageManager(page)
 
-  await page.getByRole('button', {name: "Edit Vet"}).nth(3).click()
-  await expect(page.locator('.selected-specialties')).toHaveText('surgery')
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Rafael Ortega')
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('surgery')
 
-  await page.locator('.dropdown-display').click()
-
-  const allBoxes = page.getByRole('checkbox')
-  
-  for(const box of await allBoxes.all()){
-    await box.check()
-    expect(await box.isChecked()).toBeTruthy()  
-  }
-
-  await expect(page.locator('.selected-specialties')).toHaveText(['surgery, radiology, dentistry'])
+  await pm.onEditVeterinariansPage().selectDropDownAndcheckAllBoxes()
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('surgery, radiology, dentistry')
 });
 
 test('Test Case 3: Unselect all specialties', async ({page}) => {
-  await expect(page.locator('.title')).toHaveText('Welcome to Petclinic')
-  await page.getByText('Veterinarians').click()
-  await page.getByText('all').click()
-  await expect(page.getByRole('heading')).toHaveText('Veterinarians')
-
-  await page.getByRole('button', {name: "Edit Vet"}).nth(2).click()
-  await expect(page.locator('.selected-specialties')).toHaveText('dentistry, surgery')
-
-  await page.locator('.dropdown-display').click()
-
-  const allBoxes = page.getByRole('checkbox')
+  const pm = new PageManager(page)
   
-  for(const box of await allBoxes.all()){
-    await box.uncheck()
-    expect(await box.isChecked()).toBeFalsy()  
-  }
+  await pm.onVeterinariansPage().clickEditVetButtonForVeterinarian('Linda Douglas')
+  
+  await pm.onEditVeterinariansPage().validateVeterinarianSpecialty('dentistry, surgery')
 
-  await expect(page.locator('.selected-specialties')).toBeEmpty()
+  await pm.onEditVeterinariansPage().selectDropDownAndUncheckAllBoxesAndValidateEmpty()
 });

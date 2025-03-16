@@ -1,76 +1,42 @@
 import { test, expect } from "@playwright/test";
+import { PageManager } from "../page-objects/pageManager";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator(".title")).toHaveText("Welcome to Petclinic");
-  await page.getByText("Owners").click();
-  await page.getByText("Search").click();
-  await expect(page.getByRole("heading")).toHaveText("Owners");
+  const pm = new PageManager(page)
+  await pm.navigateTo().openHomePage()
+  await pm.navigateTo().ownersPage()
 });
 
-test("Test Case 1: Validate selected pet types from the list", async ({
-  page,
-}) => {
-  await page.getByText("George Franklin").click();
-  await expect(page.locator(".ownerFullName")).toHaveText("George Franklin");
+test("Test Case 1: Validate selected pet types from the list", async ({page}) => {
+  const pm = new PageManager(page)
 
-  //store variable of type field
-  const typeField = page.locator("#type1");
-  //store variable of dropdown
-  const dropDownField = page.locator("#type");
+  await pm.onOwnersPage().selectOwnerBasedOffName('George Franklin')
 
-  await page
-    .locator("app-pet-list", { hasText: "Leo" })
-    .getByRole("button", { name: "Edit Pet" })
-    .click();
-  await expect(page.getByRole("heading")).toHaveText("Pet");
+  await pm.onOwnerInformationPage().clickEditPetButtonForPet('Leo')
 
   // This checks owner and name inside type
-  await expect(page.locator("#owner_name")).toHaveValue("George Franklin");
-  await expect(typeField).toHaveValue("cat");
+  await pm.onPetDetailsPage().validateOwnerNameAndFollowingPetInEditPetPage('George Franklin', 'cat')
 
   //list of options
-  const listOfOptions = ["cat", "dog", "lizard", "snake", "bird", "hamster"];
+  await pm.onPetDetailsPage().validateListOfPetTypesCanBeSelectedAndAppearInTypeField()
 
-  for (const currentOption of listOfOptions) {
-    dropDownField.selectOption(currentOption);
-    await expect(typeField).toHaveValue(currentOption);
-  }
 });
 
 test("Test Case 2: Validate the pet type update", async ({ page }) => {
-  await page.getByText("Eduardo Rodriquez").click();
+  const pm = new PageManager(page)
 
-  await page
-    .locator("app-pet-list", { hasText: "Rosy" })
-    .getByRole("button", { name: "Edit Pet" })
-    .click();
+  await pm.onOwnersPage().selectOwnerBasedOffName('Eduardo Rodriquez')
+  await pm.onOwnerInformationPage().clickEditPetButtonForPet('Rosy')
 
-  const typeField = page.locator("#type1");
-  const dropDownField = page.locator("#type");
+  await pm.onPetDetailsPage().validatePetNameAndPetTypeInEditPetPage('Rosy', 'dog')
+  
+  await pm.onPetDetailsPage().selectPetTypeAndVerifyVisibleInTypeField('bird')
+  await pm.onPetDetailsPage().selectAButtonNamed('Update Pet')
+  //not sure how to make this a reusable method
+  await pm.onOwnerInformationPage().validatePetTypeForPet('Rosy', 'bird')
+  await pm.onOwnerInformationPage().clickEditPetButtonForPet('Rosy')
+  await pm.onPetDetailsPage().validatePetNameAndPetTypeInEditPetPage('Rosy', 'bird')
 
-  await expect(page.locator("#name")).toHaveValue("Rosy");
-  await expect(typeField).toHaveValue("dog");
-
-  await dropDownField.selectOption("bird");
-  await expect(typeField).toHaveValue("bird");
-  await expect(dropDownField).toHaveValue("bird");
-  await page.getByRole("button", { name: "Update Pet" }).click();
-
-  await expect(
-    page.locator("app-pet-list", { hasText: "Rosy" }).locator("dd").nth(2)
-  ).toHaveText("bird");
-
-  await page
-    .locator("app-pet-list", { hasText: "Rosy" })
-    .getByRole("button", { name: "Edit Pet" })
-    .click();
-
-  await expect(page.locator("#name")).toHaveValue("Rosy");
-  await expect(typeField).toHaveValue("bird");
-
-  await dropDownField.selectOption("dog");
-  await expect(typeField).toHaveValue("dog");
-  await expect(dropDownField).toHaveValue("dog");
-  await page.getByRole("button", { name: "Update Pet" }).click();
+  await pm.onPetDetailsPage().selectPetTypeAndVerifyVisibleInTypeField('dog')
+  await pm.onPetDetailsPage().selectAButtonNamed('Update Pet')
 });
