@@ -7,7 +7,34 @@ constructor(page: Page){
     this.page = page
 }
 
-async selectPetTypeAndVerify(petType: string){
+async addNameToInputAndValidateTextIconChange(petNameToAdd: string)
+{
+    const inputPetName = this.page.locator("input#name");
+    await inputPetName.click();
+    await inputPetName.pressSequentially("Tom");
+  
+    await expect(this.page.locator("form span").first()).toHaveClass(/glyphicon-ok/);
+}
+
+async pickASpecificDateAndValidateDoBField(year: string, month: string, day: string, dateInDoBField: string)
+{
+    await this.page.getByLabel('Open calendar').click()
+    await this.page.getByLabel('Choose month and year').click()
+    await this.page.getByLabel('Previous 24 years').click()
+    await this.page.getByText(year).click()
+    await this.page.getByText(month).click()
+    await this.page.getByText(day, {exact: true}).click()
+  
+    await expect(this.page.locator('[name="birthDate"]')).toHaveValue(dateInDoBField);
+}
+
+async selectAPetTypeAndSave(animalToSwitch: string)
+{
+    await this.page.locator("select").selectOption(animalToSwitch);
+    await this.page.getByRole("button", { name: "Save Pet" }).click();
+}
+
+async selectPetTypeAndVerifyVisibleInTypeField(petType: string){
     const typeField = this.page.locator("#type1");
     const dropDownField = this.page.locator("#type");
 
@@ -18,7 +45,7 @@ async selectPetTypeAndVerify(petType: string){
     await expect(this.page.locator("#name")).toHaveValue("Rosy");
 }
 
-async petDetailsPageButtonSelector(buttonToSelect: string)
+async selectAButtonNamed(buttonToSelect: string)
 {
     await this.page.getByRole("button", { name: buttonToSelect }).click();
 }
@@ -75,20 +102,7 @@ async addDescriptionForNewVisitPetDetail(description: string)
     await descriptionInput.fill(description);
 }
 
-async verifyCurrentDateNewVisitForPetName(petName: string)
-{
-    const date = new Date();
-    const currentDay = date.getDate().toString()
-    const currentMonth = date.toLocaleString('En-US', {month : '2-digit'})
-    const currentYear = date.getFullYear().toString();
-
-    const samanthaPetDetails = this.page.locator('app-pet-list', {hasText: petName})
-    const petNameDate = samanthaPetDetails.getByRole("row").nth(2).getByRole("cell").first()
-
-    await expect(petNameDate).toHaveText(`${currentYear}-${currentMonth}-${currentDay.padStart(2,"0")}`);
-}
-
-async checkThroughListOfPetsInTypeList()
+async validateListOfPetTypesCanBeSelectedAndAppearInTypeField()
 {
     const listOfOptions = ["cat", "dog", "lizard", "snake", "bird", "hamster"];
     const dropDownField = this.page.locator("#type");
@@ -107,29 +121,4 @@ async validatePetNewVisitPetNameAndOwner(petname: string, ownerName: string)
     await expect(newVisitRow.getByRole("cell").last()).toHaveText(ownerName);
 }
 
-async validateMostRecentDateIsTopOfVisitListToBeTrueForPet(petName: string)
-{
-    const samanthaPetDetails = this.page.locator('app-pet-list', {hasText: petName})
-    const petNameDate = samanthaPetDetails.getByRole("row").nth(2).getByRole("cell").first()
-    const dermatologyGetDate = await petNameDate.textContent();
-    const massageGetDate = await samanthaPetDetails.getByRole("row").nth(3).getByRole("cell").first().textContent();
-
-    const dermatologyDate = Date.parse(dermatologyGetDate!);
-    const massageDate = Date.parse(massageGetDate!);
-    //This checks that derm date is more current than massage Date
-    expect(dermatologyDate > massageDate).toBeTruthy();
-}
-
-async deleteLatestVisitorForPet(petName: string)
-{
-    const samanthaPetDetails = this.page.locator('app-pet-list', {hasText: petName})
-    const deleteVisitButton = samanthaPetDetails.getByRole("row").getByRole("button", { name: "Delete Visit" });
-    await deleteVisitButton.first().click();
-}
-
-async validateNewVisitNoLongerExistsForPetNameWithDescription(petName: string, visitDescription: string)
-{
-    const samanthaPetDetails = this.page.locator('app-pet-list', {hasText: petName})
-    await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText(visitDescription);
-}
 }

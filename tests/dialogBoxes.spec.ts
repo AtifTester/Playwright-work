@@ -3,7 +3,7 @@ import { PageManager } from "../page-objects/pageManager";
 
 test.beforeEach(async ({ page }) => {
   const pm = new PageManager(page)
-  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+  await pm.navigateTo().openHomePage()
 });
 
 test("Test Case: Add and delete pet type", async ({ page }) => {

@@ -8,15 +8,6 @@ constructor(page: Page){
     this.page = page
 }
 
-async inputTextInSpecialtyFieldAndUpdate(textToInput: string){
-    const specialtyInputField = this.page.locator("#name");
-
-    await specialtyInputField.click();
-    await specialtyInputField.clear();
-    await specialtyInputField.fill(textToInput);
-    await this.page.getByRole("button", { name: "Update" }).click();
-}
-
 async clickEditButtonForSpecialty(specialtie: string)
 {
     await this.page.getByRole("row", { name: specialtie }).getByRole("button", { name: "Edit" }).click();
@@ -28,6 +19,11 @@ async validateChosenRowHasSpeciality(specialtyRow: number, specialtie: string)
     await expect(this.page.locator(`[id="${specialtyRow}"]`)).toHaveValue(specialtie);
 }
 
+async deleteASpecialityByName(specialityName: string)
+{
+    await this.page.getByRole("row", { name: specialityName}).getByRole("button", { name: "Delete" }).click();
+}
+
 async addASpecialtieRowAndSave(specialityToAdd: string)
 {
     await this.page.getByRole("button", { name: "Add" }).click();
@@ -35,11 +31,6 @@ async addASpecialtieRowAndSave(specialityToAdd: string)
     await specialtyInputField.click();
     await specialtyInputField.fill(specialityToAdd);
     await this.page.getByRole("button", { name: "Save" }).click();
-}
-
-async deleteASpecialityByName(specialityName: string)
-{
-    await this.page.getByRole("row", { name: specialityName}).getByRole("button", { name: "Delete" }).click();
 }
 
 async compareSpecialityRowDataToVetenerianSpecialtyDataForVetenarian(vetenarianName: string)
@@ -66,13 +57,6 @@ async compareSpecialityRowDataToVetenerianSpecialtyDataForVetenarian(vetenarianN
     const dropDownData = this.page.locator(".dropdown-content label");
 
     await expect(dropDownData).toHaveText(specialtiesList);
-}
-
-async checkASpecialtyForVetenarianAndSave(specialityToCheck: string)
-{
-    await this.page.getByRole("checkbox", { name: specialityToCheck}).check();
-    await this.page.locator(".dropdown-display").click();
-    await this.page.getByRole("button", { name: "Save Vet" }).click();
 }
 
 }

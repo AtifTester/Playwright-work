@@ -19,11 +19,6 @@ async validateCurrentPetTypePageHeaderToHave(pageHeader: string)
     }
 }
 
-async editPetTypePageButtonSelector(buttonTypeToSelect: string)
-{
-    await this.page.getByRole('button', {name: buttonTypeToSelect}).click()
-}
-
 async selectPetTypeButton(petTypePageButtonToSelect: string)
 {
     await this.page.getByRole("button", { name: petTypePageButtonToSelect}).click();
@@ -44,26 +39,10 @@ async selectPetTypeEditButton(nameOfPetTypeToEdit: string)
     await expect(this.page.getByRole('heading')).toHaveText('Edit Pet Type')
 }
 
-async setPetInputName(petNameToInput: string)
-{
-    const petTypeNameInputField = this.page.locator('#name')
-    await petTypeNameInputField.click()
-    await petTypeNameInputField.clear()
-    await petTypeNameInputField.fill(petNameToInput)
-}
-
 async validateCorrectPetTypeNameInSelectedRow(validatePetTypeValue: string, tableRowToSelect: number)
 {
     await this.validateCurrentPetTypePageHeaderToHave('Pet Types')
     await expect(this.page.getByRole('row').nth(tableRowToSelect).locator('input')).toHaveValue(validatePetTypeValue)
-}
-
-async validateEditPetTypePageInputValueOrNameRequestIfBlank(textToValidateInEditPetTypePage: string)
-{
-    if(textToValidateInEditPetTypePage == '')
-        await expect(this.page.locator('.help-block')).toHaveText('Name is required')
-    else
-        await expect(this.page.locator('#name')).toHaveValue(textToValidateInEditPetTypePage)
 }
 
 async validatePetTypeAddHasNameAndVisibleInput()

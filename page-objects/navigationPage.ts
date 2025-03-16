@@ -7,7 +7,7 @@ constructor(page: Page){
     this.page = page
 }
 
-async runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+async openHomePage()
 {
     await this.page.goto("/");
     await expect(this.page.locator(".title")).toHaveText("Welcome to Petclinic");

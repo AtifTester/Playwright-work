@@ -13,11 +13,6 @@ async selectOwnerBasedOffName(ownerName: string){
     await expect(this.page.locator(".ownerFullName")).toHaveText(ownerName);
 }
 
-async ownerPageButtonSelector(buttonToSelect: string)
-{
-   await this.page.getByRole("button", { name: buttonToSelect}).click();
-}
-
 async validateOwnersCityAndPets(ownerName: string, city: string, pet: string)
 {
     const targetRow = this.page.getByRole("row", { name: ownerName});
@@ -30,7 +25,7 @@ async validateNumberOfSameCities(cityAmount: number, cityName: string)
     await expect(this.page.getByRole("row", { name: cityName})).toHaveCount(cityAmount);
 }
 
-async listOfOwnerSurnameToAppearWhenSearched(listOfOwnerNameToPassIn: string[])
+async validateNamesEnteredAppearInSurnameSearch(listOfOwnerNameToPassIn: string[])
 {
     const lastNameField = this.page.locator("#lastName");
 
@@ -50,7 +45,7 @@ async listOfOwnerSurnameToAppearWhenSearched(listOfOwnerNameToPassIn: string[])
     }
 }
 
-async clickOwnerBasedOffNumberAndToVerifySameOwnerInfoPetNameAndNumber(ownerTelephoneNumber: string)
+async clickOwnerNumberAndToVerifySameOwnerInfoPetNameAndNumber(ownerTelephoneNumber: string)
 {
     const pm = new PageManager(this.page)
 
@@ -78,23 +73,5 @@ async verifyCityContainsFollowingPets(city: string, petsToVerify: string[])
 
     expect(emptyPetList).toEqual(petsToVerify);
 }
-
-async validatePetHasNewInfoInOwnerPage(petNameToValidate: string)
-{
-    const petPageSection = this.page.getByRole("cell", { name: petNameToValidate})
-    const petInfoDetail = petPageSection.locator("dd");
-    await expect(petInfoDetail.first()).toHaveText("Tom");
-    await expect(petInfoDetail.nth(1)).toHaveText("2014-05-02");
-    await expect(petInfoDetail.last()).toHaveText("dog");
-}
-
-async deleteAPetFromOwnerPageAndVerifyItNoLongerExists(petName: string)
-{
-    const petPageSection = this.page.getByRole("cell", { name: petName})
-    await petPageSection.getByRole("button", { name: "Delete Pet" }).click();
-
-    await expect(petPageSection).not.toBeVisible()
-}
-
 
 }

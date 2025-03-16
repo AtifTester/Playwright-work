@@ -8,7 +8,7 @@ test.describe("Owner focused test cases", () => {
   test.beforeEach(async ({ page }) => {
     const pm = new PageManager(page)
 
-    await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+    await pm.navigateTo().openHomePage()
     await pm.navigateTo().ownersPage()
   });
 
@@ -25,14 +25,13 @@ test.describe("Owner focused test cases", () => {
   test("Test Case 3: Validate search by Last Name", async ({ page }) => {
     const pm = new PageManager(page)
 
-    await pm.onOwnersPage().listOfOwnerSurnameToAppearWhenSearched(['Black', 'Davis', 'Es', 'Playwright'])
-
+    await pm.onOwnersPage().validateNamesEnteredAppearInSurnameSearch(['Black', 'Davis', 'Es', 'Playwright'])
   });
 
   test("Test Case 4: Validate phone number and pet name on the Owner Information page", async ({page}) => {
     const pm = new PageManager(page)
 
-    await pm.onOwnersPage().clickOwnerBasedOffNumberAndToVerifySameOwnerInfoPetNameAndNumber('6085552765')
+    await pm.onOwnersPage().clickOwnerNumberAndToVerifySameOwnerInfoPetNameAndNumber('6085552765')
   });
 
   test("Test Case 5: Validate pets of the Madison city", async ({ page }) => {
@@ -46,7 +45,7 @@ test.describe("Owner focused test cases", () => {
 test("Test Case 6: Validate specialty update", async ({ page }) => {
   const pm = new PageManager(page)
 
-  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+  await pm.navigateTo().openHomePage()
   await pm.navigateTo().veterinariansPage()
 
   //checks table, unique row rafael, and checks for surgery
@@ -54,7 +53,7 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
 
   await pm.navigateTo().specialtiesPage()
   await pm.onSpecialtiesPage().clickEditButtonForSpecialty('surgery')
-  await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('dermatology')
+  await pm.onEditSpecialityPage().inputTextInSpecialtyFieldAndUpdate('dermatology')
 
   await pm.onSpecialtiesPage().validateChosenRowHasSpeciality(1, 'dermatology')
 
@@ -64,13 +63,13 @@ test("Test Case 6: Validate specialty update", async ({ page }) => {
   //Repeat steps to revert change
   await pm.navigateTo().specialtiesPage()
   await pm.onSpecialtiesPage().clickEditButtonForSpecialty('dermatology')
-  await pm.onSpecialtiesPage().inputTextInSpecialtyFieldAndUpdate('surgery')
+  await pm.onEditSpecialityPage().inputTextInSpecialtyFieldAndUpdate('surgery')
 });
 
 test("Test Case 7: Validate specialty lists", async ({ page }) => {
   const pm = new PageManager(page)
 
-  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+  await pm.navigateTo().openHomePage()
   
   await pm.navigateTo().specialtiesPage()
 
@@ -78,7 +77,7 @@ test("Test Case 7: Validate specialty lists", async ({ page }) => {
 
   await pm.onSpecialtiesPage().compareSpecialityRowDataToVetenerianSpecialtyDataForVetenarian('Sharon Jenkins')
 
-  await pm.onSpecialtiesPage().checkASpecialtyForVetenarianAndSave('oncology')
+  await pm.onEditVeterinariansPage().checkASpecialtyForVetenarianAndSave('oncology')
 
   await pm.onVeterinariansPage().validateVeterinarianToHaveSpecialty('Sharon Jenkins', 'oncology')
 

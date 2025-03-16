@@ -6,7 +6,7 @@ import { validateHeaderName } from 'http';
 test.beforeEach( async({page}) => {
   const pm = new PageManager(page)
 
-  await pm.navigateTo().runBeforeAllTestsToLoadClinicAndVerifyHomePage()
+  await pm.navigateTo().openHomePage()
   await pm.navigateTo().petTypesPage()
 })
 
@@ -14,13 +14,13 @@ test('Test Case 1: Update pet types', async ({page}) => {
   const pm = new PageManager(page)
 
   await pm.onPetTypePage().selectPetTypeEditButton('cat')
-  await pm.onPetTypePage().setPetInputName('rabbit')
-  await pm.onPetTypePage().editPetTypePageButtonSelector('update')
+  await pm.onEditPetTypePage().setPetInputName('rabbit')
+  await pm.onEditPetTypePage().selectButtonNamed('update')
   await pm.onPetTypePage().validateCorrectPetTypeNameInSelectedRow('rabbit', 1)
 
   await pm.onPetTypePage().selectPetTypeEditButton('rabbit')
-  await pm.onPetTypePage().setPetInputName('cat')
-  await pm.onPetTypePage().editPetTypePageButtonSelector('update')
+  await pm.onEditPetTypePage().setPetInputName('cat')
+  await pm.onEditPetTypePage().selectButtonNamed('update')
   await pm.onPetTypePage().validateCorrectPetTypeNameInSelectedRow('cat', 1)
 });
 
@@ -29,9 +29,9 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
 
   await pm.onPetTypePage().selectPetTypeEditButton('dog')
 
-  await pm.onPetTypePage().setPetInputName('moose')
-  await pm.onPetTypePage().validateEditPetTypePageInputValueOrNameRequestIfBlank('moose')
-  await pm.onPetTypePage().editPetTypePageButtonSelector('cancel')
+  await pm.onEditPetTypePage().setPetInputName('moose')
+  await pm.onEditPetTypePage().validatePetTypePageInputValue('moose')
+  await pm.onEditPetTypePage().selectButtonNamed('cancel')
  
   await pm.onPetTypePage().validateCorrectPetTypeNameInSelectedRow('dog', 2)
   });
@@ -40,12 +40,12 @@ test('Test Case 2: Cancel pet type update', async ({page}) => {
     const pm = new PageManager(page) 
 
     await pm.onPetTypePage().selectPetTypeEditButton('lizard')
-    await pm.onPetTypePage().setPetInputName('')
+    await pm.onEditPetTypePage().setPetInputName('')
 
-    await pm.onPetTypePage().validateEditPetTypePageInputValueOrNameRequestIfBlank('')
-    await pm.onPetTypePage().editPetTypePageButtonSelector('update')
+    await pm.onEditPetTypePage().validatePetTypePageNameResponseWhenInputBlank('')
+    await pm.onEditPetTypePage().selectButtonNamed('update')
     await pm.onPetTypePage().validateCurrentPetTypePageHeaderToHave('Edit Pet Type')
 
-    await pm.onPetTypePage().editPetTypePageButtonSelector('cancel')
+    await pm.onEditPetTypePage().selectButtonNamed('cancel')
     await pm.onPetTypePage().validateCurrentPetTypePageHeaderToHave('Pet Types')
   });
