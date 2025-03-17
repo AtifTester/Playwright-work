@@ -74,4 +74,9 @@ async verifyCityContainsFollowingPets(city: string, petsToVerify: string[])
     expect(emptyPetList).toEqual(petsToVerify);
 }
 
+async validateNumberOfRowsInOwnerPage(numberOfOwners: number)
+{
+    await expect(this.page.getByRole('row').locator('.ownerFullName')).toHaveCount(numberOfOwners)
+}
+
 }

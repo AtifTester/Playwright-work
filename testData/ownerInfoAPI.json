@@ -1,0 +1,92 @@
+{
+    "firstName": "Bell",
+    "lastName": "Crane",
+    "address": "110 W. Liberty St.",
+    "city": "Madison",
+    "telephone": "6085551023",
+    "id": 777,
+    "pets": [
+        {
+            "name": "Leo",
+            "birthDate": "2000-09-07",
+            "type": {
+                "name": "cat",
+                "id": 1535
+            },
+            "id": 1547,
+            "ownerId": 777,
+            "visits": [ {
+                "date": "2025-03-02",
+                "description": "lol",
+                "id": 3297,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "kik",
+                "id": 3111,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "lol",
+                "id": 3222,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "kik",
+                "id": 3333,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "lol",
+                "id": 3444,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "kik",
+                "id": 3555,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "lol",
+                "id": 3666,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "kik",
+                "id": 3777,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "lol",
+                "id": 3888,
+                "petId": null
+            },
+            {
+                "date": "2025-03-02",
+                "description": "kik",
+                "id": 3999,
+                "petId": null
+            }
+        ]
+        },
+        {
+            "name": "Carl",
+            "birthDate": "2000-03-06",
+            "type": {
+                "name": "Penguin",
+                "id": 2000
+            },
+            "id": 2001,
+            "ownerId": 303,
+            "visits": []
+        }
+    ]
+}
