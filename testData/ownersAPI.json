@@ -1,0 +1,99 @@
+[
+    {
+        "firstName": "Bell",
+        "lastName": "Crane",
+        "address": "110 W. Liberty St.",
+        "city": "Madison",
+        "telephone": "6085551023",
+        "id": 777,
+        "pets": [
+            {
+                "name": "Leo",
+                "birthDate": "2000-09-07",
+                "type": {
+                    "name": "cat",
+                    "id": 1535
+                },
+                "id": 1547,
+                "ownerId": 777,
+                "visits": []
+            },
+            {
+                "name": "Carl",
+                "birthDate": "2000-03-06",
+                "type": {
+                    "name": "Penguin",
+                    "id": 2000
+                },
+                "id": 2001,
+                "ownerId": 303,
+                "visits": []
+            }
+        ]
+    },
+    {
+        "firstName": "Eduardo",
+        "lastName": "Rodriquez",
+        "address": "2693 Commerce St.",
+        "city": "McFarland",
+        "telephone": "6085558763",
+        "id": 779,
+        "pets": [
+            {
+                "name": "Jewel",
+                "birthDate": "2000-03-07",
+                "type": {
+                    "name": "dog",
+                    "id": 1536
+                },
+                "id": 1550,
+                "ownerId": 779,
+                "visits": []
+            },
+            {
+                "name": "Rosy",
+                "birthDate": "2001-04-17",
+                "type": {
+                    "name": "dog",
+                    "id": 1536
+                },
+                "id": 1549,
+                "ownerId": 779,
+                "visits": []
+            },
+            {
+                "name": "Gloria",
+                "birthDate": "2021-04-17",
+                "type": {
+                    "name": "lizard",
+                    "id": 1537
+                },
+                "id": 1547,
+                "ownerId": 779,
+                "visits": []
+            },
+            {
+                "name": "Florence",
+                "birthDate": "2001-04-17",
+                "type": {
+                    "name": "duck",
+                    "id": 1538
+                },
+                "id": 1548,
+                "ownerId": 779,
+                "visits": []
+            },
+            {
+                "name": "Larry",
+                "birthDate": "2001-04-17",
+                "type": {
+                    "name": "Lobster",
+                    "id": 1539
+                },
+                "id": 1549,
+                "ownerId": 779,
+                "visits": []
+            }
+        ]
+    }
+]

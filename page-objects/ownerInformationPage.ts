@@ -85,5 +85,26 @@ async validateNewVisitNoLongerExistsForPetNameWithDescription(petName: string, v
     await expect(samanthaPetDetails.locator('app-visit-list')).not.toContainText(visitDescription);
 }
 
+async validateOwnerInformationIsCorrect(ownerName: string, ownerAddress: string, ownerCity: string, ownerNumber: string)
+{
+    const ownerInfoDetailSection = this.page.getByRole("table").first().locator('tr')
+
+    await expect(ownerInfoDetailSection.first()).toContainText(ownerName);
+    await expect(ownerInfoDetailSection.nth(1)).toContainText(ownerAddress);
+    await expect(ownerInfoDetailSection.nth(2)).toContainText(ownerCity);
+    await expect(ownerInfoDetailSection.last()).toContainText(ownerNumber);
+}
+
+async validateNumberOfPets(numberOfPets: number)
+{
+    await expect(this.page.locator('app-pet-list')).toHaveCount(numberOfPets)
+}
+
+async validateNumberOfVisitsForPet(petName: string, visitCountToVerify: number)
+{
+    const petTarget = this.page.getByRole('row', {name: petName})
+  await expect(petTarget.locator('app-visit-list').getByRole('row').filter({has: this.page.locator('td')})).toHaveCount(visitCountToVerify)
+}
+
 }
 
